@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,15 +22,31 @@ public class PlayerController : MonoBehaviour
     public GameObject gameOverCanvas;
     public GameObject gameWinCanvas;
     public RectTransform battery;
+    public RectTransform scoreBox;
     public FuturePath fp;
 
     public Transform background;
 
 
-
     //speed of light
     public bool relativistic;
     public float speedOfLight;
+
+    public int maxScore;
+    public int score
+    {
+        get
+        {
+            return Convert.ToInt32(scoreBox.GetComponent<Text>().text.Substring(7));
+        }
+        set
+        {
+            int the = Convert.ToInt32(scoreBox.GetComponent<Text>().text.Substring(7));
+            the = value;
+            scoreBox.GetComponent<Text>().text = "Score: " + the.ToString();
+        }
+        
+    }
 
     public Vector3 originalScale
     {
@@ -134,6 +151,8 @@ public class PlayerController : MonoBehaviour
         gameOverCanvas.SetActive(false);
         gameWinCanvas.SetActive(false);
         originalScale = transform.localScale;
+
+        score = maxScore;
     }
     void Awake()
     {
@@ -205,8 +224,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        --score;
         
-
         
 
     }
@@ -356,6 +375,7 @@ public class PlayerController : MonoBehaviour
        // r.velocity = GetComponent<NewtonGravity>().OrbitVelocity();
         //gameOverCanvas.SetActive(false);
         mass = originalMass;
+        score = maxScore;
         Start();
     }
 }

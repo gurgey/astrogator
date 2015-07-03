@@ -12,9 +12,9 @@ public class CameraFollow : MonoBehaviour {
     public float travelT;
     public float xDistBound;
 
-    public Matrix4x4 originalProjection;
+    //Matrix4x4 nrProjection;
 
-    Camera camera;
+    new Camera camera;
 
     void Start()
     {
@@ -27,7 +27,7 @@ public class CameraFollow : MonoBehaviour {
         prevYL = 0f;
 
         camera = GetComponent<Camera>();
-        originalProjection = camera.projectionMatrix;
+       // nrProjection = camera.projectionMatrix;
     }
 
     Vector3 vel;
@@ -44,7 +44,7 @@ public class CameraFollow : MonoBehaviour {
     
     void Update()
     {
-
+        camera.ResetProjectionMatrix();
         //float mxd = Mathf.Min(target.GetComponent<PlayerController>().maxXDiff, xDistBound);
         //PlayerController pc = target.GetComponent<PlayerController>();
         //if (pc.mass != float.MaxValue && target.gameObject.activeSelf)
@@ -70,6 +70,7 @@ public class CameraFollow : MonoBehaviour {
         //        zDistance
         //    );
         //}
+        //camera.projectionMatrix = nrProjection;
         PlayerController pc = target.GetComponent<PlayerController>();
         if (pc.mass != float.MaxValue && target.gameObject.activeSelf)
         {
@@ -94,6 +95,7 @@ public class CameraFollow : MonoBehaviour {
                 zDistance
             );
         }
+        //nrProjection = camera.projectionMatrix;
         //transform.position = new Vector3
         //(
         //    target.position.x + xDistance,
@@ -101,10 +103,11 @@ public class CameraFollow : MonoBehaviour {
         //    target.position.z + zDistance
 
         //);
-        //Matrix4x4 p = originalProjection;
-        //p.m00 *= pc.gamma.x;
-        //p.m11 *= pc.gamma.y;
-        //camera.projectionMatrix = p;
+        Matrix4x4 p = camera.projectionMatrix;
+        p.m00 *= pc.gamma.x;
+        p.m11 *= pc.gamma.y;
+
+        camera.projectionMatrix = p;
     }
 
 	
