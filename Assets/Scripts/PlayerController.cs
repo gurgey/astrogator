@@ -3,11 +3,11 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class Boundary
-{
-    public float xMin, xMax, zMin, zMax;
-}
+//[System.Serializable]
+//public class Boundary
+//{
+//    public float xMin, xMax, zMin, zMax;
+//}
 
 public class PlayerController : MonoBehaviour 
 {
@@ -16,11 +16,46 @@ public class PlayerController : MonoBehaviour
     public float mass;
     public float enginesOnInterval;
     public float energyRechargeTime;
-    public Boundary boundary;
+    public int everyKtimes = 0;
+   // public Boundary boundary;
     public GameObject gameOverCanvas;
     public GameObject gameWinCanvas;
     public RectTransform battery;
     public FuturePath fp;
+
+    public Transform background;
+
+
+
+    //speed of light
+    public bool relativistic;
+    public float speedOfLight;
+
+    public Vector3 originalScale
+    {
+        get;
+        private set;
+    }
+
+    public Vector3 gamma
+    {
+        get
+        {
+            if (!relativistic)
+                return new Vector3(1.0f, 1.0f);
+            else
+            {
+                float beta2x = velocity.x * velocity.x / speedOfLight / speedOfLight;
+                float gammaX = 1f / Mathf.Sqrt(1 - beta2x);
+
+                float beta2y = velocity.y * velocity.y / speedOfLight / speedOfLight;
+                float gammaY = 1f / Mathf.Sqrt(1 - beta2y);
+                return new Vector3(gammaX, gammaY);
+            }
+        }
+    }
+
+
     public int energy 
     {
         get
@@ -38,12 +73,51 @@ public class PlayerController : MonoBehaviour
     public Vector3 acceleration { get; private set; }
     public Vector3 velocity { get; private set; }
 
+    public float maxXDiff
+    {
+        get
+        {
+            return Mathf.Abs(maxX - minX);
+        }
+    }
+    public float maxYDiff
+    {
+        get
+        {
+            return Mathf.Abs(maxY - minY);
+        }
+    }
+
+    public Vector3 camCenter
+    {
+        get
+        {
+            //return new Vector3((maxX + minX) / 2f, (maxY + minY) / 2f);
+            return fp.transform.position;
+        }
+    }
+
+    public Bounds camBounds
+    {
+        get
+        {
+            return fp.GetComponent<Renderer>().bounds;
+        }
+    }
+
+    float maxX;
+    float minX;
+    float maxY;
+    float minY;
+
     float originalMass;
 
     public void ApplyForce(Vector3 direction)
     {
         acceleration = direction / mass;
     }
+
+    
 
     void Start()
     {
@@ -59,7 +133,7 @@ public class PlayerController : MonoBehaviour
         velocity = GetComponent<NewtonGravity>().OrbitVelocity(mass);
         gameOverCanvas.SetActive(false);
         gameWinCanvas.SetActive(false);
-
+        originalScale = transform.localScale;
     }
     void Awake()
     {
@@ -69,8 +143,15 @@ public class PlayerController : MonoBehaviour
 
     float enginesInt = 0.0f;
     float rechargeInt = 0.0f;
+    int counter = 0;
     void FixedUpdate()
     {
+        //++counter;
+        //if (counter != everyKtimes)
+        //{
+        //    return;
+        //}
+        //counter = 0;
         enginesInt += Time.fixedDeltaTime;
         rechargeInt += Time.fixedDeltaTime;
 
@@ -90,6 +171,7 @@ public class PlayerController : MonoBehaviour
             //Rigidbody r = (Rigidbody)GetComponent<Rigidbody>();
 
             Vector3 pz = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pz.z = 0f;
             float moveHorizontal = pz.x - transform.position.x;
             float moveVertical = pz.y - transform.position.y;
 
@@ -99,11 +181,17 @@ public class PlayerController : MonoBehaviour
             float mv = moveVertical * speed * norm;
             velocity += new Vector3(mh, mv, 0f) / mass;
 
+            //Quaternion.look
             //Quaternion quot = Quaternion.LookRotation(pz - transform.position, new Vector3(0, 0, -1));
-
-           // transform.rotation = quot;
+            //transform.LookAt(pz);
+            //transform.rotation = quot;
             //transform.FindChild("Engines").rotation = quot;
-
+            var newRotation = Quaternion.LookRotation(transform.position - pz, Vector3.forward);
+            newRotation.x = 0.0f;
+            newRotation.y = 0.0f;
+            transform.rotation = newRotation;//Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * 8);
+            transform.Rotate(270, 0, 0);
+            //transform.FindChild("Engines").rotation = newRotation;
             rechargeInt = 0.0f;
             --energy;
         }
@@ -113,7 +201,7 @@ public class PlayerController : MonoBehaviour
             if (rechargeInt > energyRechargeTime)
             {
                 rechargeInt = 0.0f;
-                energy += 100;
+                energy = 100;
             }
         }
 
@@ -123,18 +211,40 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void Update()
+    {
+        //Transform t = GetComponent<NewtonGravity>().planets;
+        ////lorentz transform
+        //if (relativistic)
+        //{
+        //    foreach (Transform planet in t)
+        //    {
+        //        Vector3 d = planet.GetComponent<PlanetTouch>().originalScale;
+        //        planet.localScale = new Vector3(gamma.x * d.x, gamma.y * d.y, 1.0f);
+        //    }
+        //    background.localScale = new Vector3(gamma.x, gamma.y, 1.0f);
+        //}
+        transform.localScale = new Vector3(originalScale.x / gamma.x, originalScale.y / gamma.y, originalScale.z);
+    }
+
     public List<Vector3> NextPoints()
     {
         int minNum = 10;
         int maxNum = 200;
-        float minDist = 0.01f;
+        float minDist = 0.1f;
         List<Vector3> ret = new List<Vector3>();
 
         Vector3 fakeAcceleration = new Vector3(acceleration.x, acceleration.y);
         Vector3 fakeVelocity = new Vector3(velocity.x, velocity.y);
         Vector3 fakePosition = new Vector3(transform.position.x, transform.position.y);
 
-        for (int i = 0; i < maxNum; ++i)
+        maxX = 0f;
+        minX = 0f;
+        maxY = 0f;
+        minY = 0f;
+
+        bool insidePlanet = false;
+        for (int i = 0; i < maxNum && !insidePlanet; ++i)
         {
             ret.Add(fakePosition);
             
@@ -142,10 +252,33 @@ public class PlayerController : MonoBehaviour
             fakePosition += Time.fixedDeltaTime * (fakeVelocity + Time.fixedDeltaTime * fakeAcceleration / 2f);
             Vector3 newAcceleration = GetComponent<NewtonGravity>().GravForce(fakePosition) / mass;
             fakeVelocity += Time.fixedDeltaTime * (fakeAcceleration + newAcceleration) / 2f;
-            
+
+            //if (fakePosition.x > maxX)
+            //{
+            //    maxX = fakePosition.x;
+            //}
+            //else if (fakePosition.x < minX)
+            //{
+            //    minX = fakePosition.x;
+            //}
+
+            //if (fakePosition.y > maxY)
+            //{
+            //    maxY = fakePosition.y;
+            //}
+            //else if (fakePosition.y < minY)
+            //{
+            //    minY = fakePosition.y;
+            //}
+
             if (i > minNum && (fakePosition - transform.position).sqrMagnitude < minDist)
             {
                 break;
+            }
+            foreach (Transform planet in GetComponent<NewtonGravity>().planets)
+            {
+                if (planet.GetComponent<Collider>().bounds.Contains(fakePosition))
+                    insidePlanet = true;
             }
 
         }

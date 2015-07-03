@@ -164,6 +164,7 @@ MonoBehaviour:
   arrows: {fileID: 1645254027}
   player: {fileID: 1664550087}
   friendly: 0
+  originalScale: {x: 0, y: 0, z: 0}
 --- !u!54 &188997319
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -329,6 +330,7 @@ MonoBehaviour:
   arrows: {fileID: 1645254027}
   player: {fileID: 1664550087}
   friendly: 1
+  originalScale: {x: 0, y: 0, z: 0}
 --- !u!54 &300101029
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -514,6 +516,7 @@ MonoBehaviour:
   arrows: {fileID: 1645254027}
   player: {fileID: 1664550087}
   friendly: 0
+  originalScale: {x: 0, y: 0, z: 0}
 --- !u!1 &460367798
 GameObject:
   m_ObjectHideFlags: 0
@@ -1679,6 +1682,7 @@ MonoBehaviour:
   arrows: {fileID: 1645254027}
   player: {fileID: 1664550087}
   friendly: 0
+  originalScale: {x: 0, y: 0, z: 0}
 --- !u!1 &1546186768
 GameObject:
   m_ObjectHideFlags: 0
@@ -1956,18 +1960,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: .100000001
   tilt: 0
-  mass: 1
+  mass: 3
   enginesOnInterval: .300000012
-  energyRechargeTime: 2
-  boundary:
-    xMin: 0
-    xMax: 0
-    zMin: 0
-    zMax: 0
+  energyRechargeTime: 1
+  everyKtimes: 3
   gameOverCanvas: {fileID: 1546186768}
   gameWinCanvas: {fileID: 524228457}
   battery: {fileID: 1116313420}
   fp: {fileID: 1321268895}
+  background: {fileID: 1594024547}
+  relativistic: 0
+  speedOfLight: 10
 --- !u!1 &1701328754
 GameObject:
   m_ObjectHideFlags: 0
@@ -3635,6 +3638,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1664550085}
+  zoomCoeff: 1.5
+  zoomT: .5
+  travelT: .100000001
+  xDistBound: 100000
+  originalProjection:
+    e00: 0
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 0
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 0
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 0
 --- !u!1 &2045567753
 GameObject:
   m_ObjectHideFlags: 0

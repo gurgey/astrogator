@@ -9,6 +9,8 @@ public class PlanetTouch : MonoBehaviour
     public bool friendly = false;
     RectTransform myArrow;
 
+    public Vector3 originalScale;
+
     void Start()
     {
         //arrows.transform.chi
@@ -24,6 +26,7 @@ public class PlanetTouch : MonoBehaviour
         myArrow.localScale = new Vector3(1, 1, 1);
         myArrow.gameObject.name = name + " Arrow";
         //arrows.transform.parent = arrows.
+        originalScale = transform.localScale;
     }
 
     void OnTriggerEnter(Collider other)
