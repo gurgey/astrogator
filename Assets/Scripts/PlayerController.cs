@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
            // transform.rotation = quot;
             //transform.FindChild("Engines").rotation = quot;
 
-
+            rechargeInt = 0.0f;
             --energy;
         }
         else
