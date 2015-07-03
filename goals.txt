@@ -1,0 +1,12 @@
+draw out elliptic 
+
+relativitistic effects
+
+make camera accelerate from center of screen to spaceship
+
+keep track of score with fuel consumption or time.
+
+asteroid belt
+
+acceleration or added velocity?
+
