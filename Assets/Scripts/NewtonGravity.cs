@@ -68,28 +68,26 @@ public class NewtonGravity : MonoBehaviour {
 
     public Vector3 GravForce(Vector3 pos)
     {
-        //closest = planets.GetChild(FindClosest());
+        closest = planets.GetChild(FindClosest());
 
-        Vector3 F = new Vector3(0, 0, 0);
 
-        int count = 0;
-        foreach (Transform p in planets)
-        {
-            ++count;
-            if (count > 2)
-            {
-                break;
-            }
-            float distX = (p.position.x - pos.x);
-            float distY = (p.position.y - pos.y);
-            //distX = (distX < R0) ? distX : distX + R0;
+        //int count = 0;
+        //foreach (Transform p in planets)
+        //{
+        //    ++count;
+        //    if (count > 2)
+        //    {
+        //        break;
+        //    }
+        float distX = (closest.position.x - pos.x);
+        float distY = (closest.position.y - pos.y);
+        //distX = (distX < R0) ? distX : distX + R0;
 
-            float r = Mathf.Sqrt(distX * distX + distY * distY + R0 * R0);
-            float a = G / r / r / r;
-            F.x += a * distX;
-            F.y += a * distY;
-            
-        }
+        float r = Mathf.Sqrt(distX * distX + distY * distY + R0 * R0);
+        float a = G / r / r / r;
+        Vector3 F = new Vector3(a * distX, a * distY);
+
+        //}
         //F.Normalize();
         //F.x *= a;
         //F.y *= a;
