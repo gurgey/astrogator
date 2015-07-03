@@ -11,13 +11,13 @@ public class NewtonGravity : MonoBehaviour {
     
     void Start()
     {
-        closest = planets.GetChild(FindClosest());
+        closest = planets.GetChild(FindClosest(transform.position));
         
         //px = 0;
         //py = 3;
     }
 
-    int FindClosest()
+    int FindClosest(Vector3 pos)
     {
         int best = -1;
         float shortest = int.MaxValue;
@@ -29,8 +29,8 @@ public class NewtonGravity : MonoBehaviour {
 
             float px = planets.GetChild(p).position.x;
             float py = planets.GetChild(p).position.y;
-            float distX = (transform.position.x - px);
-            float distY = (transform.position.y - py);
+            float distX = (pos.x - px);
+            float distY = (pos.y - py);
 
            // UpdateArrows(distX, distY);
            // if (distX*distX + disy)
@@ -49,7 +49,7 @@ public class NewtonGravity : MonoBehaviour {
 
     void FixedUpdate()
     {
-        closest = planets.GetChild(FindClosest());
+        closest = planets.GetChild(FindClosest(transform.position));
         //closest = planets.GetChild(FindClosest());
 
         //float distX = (closest.position.x - thisRB.position.x);
@@ -68,7 +68,7 @@ public class NewtonGravity : MonoBehaviour {
 
     public Vector3 GravForce(Vector3 pos)
     {
-        closest = planets.GetChild(FindClosest());
+        Transform fakeClosest = planets.GetChild(FindClosest(pos));
 
 
         //int count = 0;
@@ -79,8 +79,8 @@ public class NewtonGravity : MonoBehaviour {
         //    {
         //        break;
         //    }
-        float distX = (closest.position.x - pos.x);
-        float distY = (closest.position.y - pos.y);
+        float distX = (fakeClosest.position.x - pos.x);
+        float distY = (fakeClosest.position.y - pos.y);
         //distX = (distX < R0) ? distX : distX + R0;
 
         float r = Mathf.Sqrt(distX * distX + distY * distY + R0 * R0);
@@ -101,7 +101,7 @@ public class NewtonGravity : MonoBehaviour {
         // v = sqrt(r a_g)
         //FixedUpdate();
         Vector3 acceleration = GravForce(transform.position) / mass;
-        closest = planets.GetChild(FindClosest());
+        closest = planets.GetChild(FindClosest(transform.position));
         Vector3 r = closest.position - transform.position;
         //float distX = (closest.position.x - thisRB.position.x);
         //float distY = (closest.position.y - thisRB.position.y);
