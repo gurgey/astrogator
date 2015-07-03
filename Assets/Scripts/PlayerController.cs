@@ -71,8 +71,18 @@ public class PlayerController : MonoBehaviour
     float rechargeInt = 0.0f;
     void FixedUpdate()
     {
+        enginesInt += Time.fixedDeltaTime;
+        rechargeInt += Time.fixedDeltaTime;
 
-        if (Input.GetMouseButtonDown(0) && energy > 0)
+        //velocity verlet method.
+
+
+        acceleration = GetComponent<NewtonGravity>().GravForce(transform.position) / mass;
+        transform.position += Time.fixedDeltaTime * (velocity + Time.fixedDeltaTime * acceleration / 2f);
+        Vector3 newAcceleration = GetComponent<NewtonGravity>().GravForce(transform.position) / mass;
+        velocity += Time.fixedDeltaTime * (acceleration + newAcceleration) / 2f;
+
+        if (Input.GetMouseButton(0) && energy > 0)
         {
             
             enginesInt = 0.0f;
@@ -97,42 +107,20 @@ public class PlayerController : MonoBehaviour
 
             --energy;
         }
-        else if (enginesInt > enginesOnInterval)
+        else
         {
             transform.FindChild("Engines").gameObject.SetActive(false);
+            if (rechargeInt > energyRechargeTime)
+            {
+                rechargeInt = 0.0f;
+                energy += 100;
+            }
         }
 
-        if (rechargeInt > energyRechargeTime)
-        {
-            rechargeInt = 0.0f;
-            ++energy;
-        }
-
-        //if (countInterval > )
-        enginesInt += Time.fixedDeltaTime;
-        rechargeInt += Time.fixedDeltaTime;
-        //var j = GetComponent<Rigidbody>().velocity;
-        //GetComponent<Rigidbody>().velocity += acceleration;
-
-        //velocity verlet method.
-
-
-        acceleration = GetComponent<NewtonGravity>().GravForce(transform.position) / mass;
-        transform.position += Time.fixedDeltaTime * (velocity + Time.fixedDeltaTime * acceleration / 2f);
-        Vector3 newAcceleration = GetComponent<NewtonGravity>().GravForce(transform.position) / mass;
-        velocity += Time.fixedDeltaTime * (acceleration + newAcceleration) / 2f;
         
-        
-        
-        
-        //var i = GetComponent<Rigidbody>().velocity;
 
+        
 
-
-        //acceleration = Gf() / mass;
-        //transform.position += Time.fixedDeltaTime * (velocity + Time.fixedDeltaTime * acceleration / 2f);
-        //Vector3 newAcceleration = Gf() / mass;
-        //velocity += Time.fixedDeltaTime * (acceleration + newAcceleration) / 2f;
     }
 
     public List<Vector3> NextPoints()
