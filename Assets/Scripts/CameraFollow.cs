@@ -8,13 +8,21 @@ public class CameraFollow : MonoBehaviour {
     float yDistance;
     float zDistance;
     public float zoomCoeff;
-    public float zoomT;
-    public float travelT;
-    public float xDistBound;
-
+    //public float zoomT;
+    //public float travelT;
+    //public float xDistBound;
     //Matrix4x4 nrProjection;
+    public float minZoom;
+    public float speed;
 
-    new Camera camera;
+    public GameObject playerInterfaceCameraGO;
+    public GameObject mainCameraGO;
+
+    Camera playerInterfaceCamera;
+    Camera mainCamera;
+
+    public bool relativistic;
+    public float speedOfLight;
 
     void Start()
     {
@@ -22,72 +30,58 @@ public class CameraFollow : MonoBehaviour {
         yDistance = transform.position.y;
         zDistance = transform.position.z;
 
-        vel = new Vector3(0, 0);
-        prevXL = 0f;
-        prevYL = 0f;
+        playerInterfaceCamera = playerInterfaceCameraGO.GetComponent<Camera>();
+        mainCamera = mainCameraGO.GetComponent<Camera>();
 
-        camera = GetComponent<Camera>();
-       // nrProjection = camera.projectionMatrix;
     }
 
-    Vector3 vel;
-    float prevXL;
-    float prevYL;
-    public Vector3 velocity
+
+
+
+    public Vector3 gamma
     {
         get
         {
-            return vel;
+            if (!relativistic)
+                return new Vector3(1.0f, 1.0f);
+            else
+            {
+                float beta2x = mainCamera.velocity.x * mainCamera.velocity.x / speedOfLight / speedOfLight;
+                float gammaX = 1f / Mathf.Sqrt(1 - beta2x);
+
+                float beta2y = mainCamera.velocity.y * mainCamera.velocity.y / speedOfLight / speedOfLight;
+                float gammaY = 1f / Mathf.Sqrt(1 - beta2y);
+                return new Vector3(gammaX, gammaY);
+            }
         }
     }
 
-    
-    void Update()
+    void LateUpdate()
     {
-        camera.ResetProjectionMatrix();
-        //float mxd = Mathf.Min(target.GetComponent<PlayerController>().maxXDiff, xDistBound);
-        //PlayerController pc = target.GetComponent<PlayerController>();
-        //if (pc.mass != float.MaxValue && target.gameObject.activeSelf)
-        //{
-        //    Bounds bounds = target.GetComponent<PlayerController>().camBounds;
-        //    float mxd = Mathf.Max(bounds.size.x * pc.gamma.x, bounds.size.y * pc.gamma.y);
+        //mainCamera.ResetProjectionMatrix();
 
-        //    GetComponent<Camera>().orthographicSize = Mathf.Lerp
-        //    (
-        //        GetComponent<Camera>().orthographicSize,
-        //        zoomCoeff * mxd,
-        //        Time.deltaTime * zoomT
-        //    );
-
-        //    Vector3 cent = bounds.center;
-        //    float xl = Mathf.Lerp(transform.position.x*pc.gamma.x, cent.x + xDistance * pc.gamma.x, travelT);
-        //    float yl = Mathf.Lerp(transform.position.y*pc.gamma.y, cent.y + yDistance * pc.gamma.y, travelT);
-        //    vel = new Vector3(xl - prevXL, yl - prevYL);
-        //    transform.position = new Vector3
-        //    (
-        //        xl,
-        //        yl,
-        //        zDistance
-        //    );
-        //}
-        //camera.projectionMatrix = nrProjection;
         PlayerController pc = target.GetComponent<PlayerController>();
         if (pc.mass != float.MaxValue && target.gameObject.activeSelf)
         {
             Bounds bounds = target.GetComponent<PlayerController>().camBounds;
-            float mxd = Mathf.Max(bounds.size.x, bounds.size.y);
+            float mxd = Mathf.Max(bounds.size.x, bounds.size.y, minZoom);
+            //mxd = Mathf.Max(mxd, minZoom);
+            //float sz = Mathf.Lerp
+            //(
+            //    mainCamera.orthographicSize,
+            //    zoomCoeff * mxd,
+            //    Time.deltaTime * zoomT
+            //);
 
-            GetComponent<Camera>().orthographicSize = Mathf.Lerp
-            (
-                GetComponent<Camera>().orthographicSize,
-                zoomCoeff * mxd,
-                Time.deltaTime * zoomT
-            );
+            float sz = Mathf.MoveTowards(mainCamera.orthographicSize, zoomCoeff * mxd, Time.smoothDeltaTime * speed);
+            mainCamera.orthographicSize = sz;
+           // playerInterfaceCamera.orthographicSize = sz;
+            
+
 
             Vector3 cent = bounds.center;
-            float xl = Mathf.Lerp(transform.position.x, cent.x + xDistance, travelT);
-            float yl = Mathf.Lerp(transform.position.y, cent.y + yDistance, travelT);
-            vel = new Vector3(xl - prevXL, yl - prevYL);
+            float xl = Mathf.MoveTowards(transform.position.x, cent.x + xDistance, Time.smoothDeltaTime * speed);
+            float yl = Mathf.MoveTowards(transform.position.y, cent.y + yDistance, Time.smoothDeltaTime * speed);
             transform.position = new Vector3
             (
                 xl,
@@ -95,19 +89,12 @@ public class CameraFollow : MonoBehaviour {
                 zDistance
             );
         }
-        //nrProjection = camera.projectionMatrix;
-        //transform.position = new Vector3
-        //(
-        //    target.position.x + xDistance,
-        //    target.position.y + yDistance,
-        //    target.position.z + zDistance
 
-        //);
-        Matrix4x4 p = camera.projectionMatrix;
-        p.m00 *= pc.gamma.x;
-        p.m11 *= pc.gamma.y;
+        //Matrix4x4 p = mainCamera.projectionMatrix;
+        //p.m00 *= gamma.x;
+        //p.m11 *= gamma.y;
 
-        camera.projectionMatrix = p;
+        //mainCamera.projectionMatrix = p;
     }
 
 	

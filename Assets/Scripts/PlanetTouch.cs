@@ -5,7 +5,7 @@ using System.Collections;
 public class PlanetTouch : MonoBehaviour 
 {
     public RectTransform arrows;
-    public PlayerController player;
+    public Transform camera;
     public bool friendly = false;
     RectTransform myArrow;
 
@@ -54,7 +54,7 @@ public class PlanetTouch : MonoBehaviour
     {
         if (myArrow.gameObject.activeSelf)
         {
-            Vector3 vec = transform.position - player.transform.position;
+            Vector3 vec = transform.position - camera.position;
             myArrow.GetComponent<Text>().text = vec.magnitude.ToString();
             float frameRatio = arrows.rect.width/arrows.rect.height;
             Vector3 lVec = arrows.worldToLocalMatrix * vec;

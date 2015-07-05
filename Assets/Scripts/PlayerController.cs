@@ -54,23 +54,23 @@ public class PlayerController : MonoBehaviour
         private set;
     }
 
-    public Vector3 gamma
-    {
-        get
-        {
-            if (!relativistic)
-                return new Vector3(1.0f, 1.0f);
-            else
-            {
-                float beta2x = velocity.x * velocity.x / speedOfLight / speedOfLight;
-                float gammaX = 1f / Mathf.Sqrt(1 - beta2x);
+    //public Vector3 gamma
+    //{
+    //    get
+    //    {
+    //        if (!relativistic)
+    //            return new Vector3(1.0f, 1.0f);
+    //        else
+    //        {
+    //            float beta2x = velocity.x * velocity.x / speedOfLight / speedOfLight;
+    //            float gammaX = 1f / Mathf.Sqrt(1 - beta2x);
 
-                float beta2y = velocity.y * velocity.y / speedOfLight / speedOfLight;
-                float gammaY = 1f / Mathf.Sqrt(1 - beta2y);
-                return new Vector3(gammaX, gammaY);
-            }
-        }
-    }
+    //            float beta2y = velocity.y * velocity.y / speedOfLight / speedOfLight;
+    //            float gammaY = 1f / Mathf.Sqrt(1 - beta2y);
+    //            return new Vector3(gammaX, gammaY);
+    //        }
+    //    }
+    //}
 
 
     public int energy 
@@ -129,10 +129,7 @@ public class PlayerController : MonoBehaviour
 
     float originalMass;
 
-    public void ApplyForce(Vector3 direction)
-    {
-        acceleration = direction / mass;
-    }
+
 
     
 
@@ -243,7 +240,7 @@ public class PlayerController : MonoBehaviour
         //    }
         //    background.localScale = new Vector3(gamma.x, gamma.y, 1.0f);
         //}
-        transform.localScale = new Vector3(originalScale.x / gamma.x, originalScale.y / gamma.y, originalScale.z);
+        //transform.localScale = new Vector3(originalScale.x / gamma.x, originalScale.y / gamma.y, originalScale.z);
     }
 
     public List<Vector3> NextPoints()
