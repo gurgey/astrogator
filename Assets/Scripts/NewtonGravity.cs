@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class NewtonGravity : MonoBehaviour {
     public float G;
     public float R0;
+    public float realG;
+    public float realR0;
+    public float whatParam;
     public Transform planets;
 
     Transform closest;
@@ -79,11 +82,12 @@ public class NewtonGravity : MonoBehaviour {
         //    {
         //        break;
         //    }
-        float distX = (fakeClosest.position.x - pos.x);
-        float distY = (fakeClosest.position.y - pos.y);
+        float distX = whatParam*(fakeClosest.position.x - pos.x);
+        float distY = whatParam*(fakeClosest.position.y - pos.y);
         //distX = (distX < R0) ? distX : distX + R0;
 
-        float r = Mathf.Sqrt(distX * distX + distY * distY + R0 * R0);
+        
+        float r = Mathf.Sqrt(distX * distX + distY * distY + R0 * R0 * whatParam * whatParam);
         float a = G / r / r / r;
         Vector3 F = new Vector3(a * distX, a * distY);
 
@@ -95,6 +99,27 @@ public class NewtonGravity : MonoBehaviour {
         return F;
     }
 
+
+    public Vector3 RealGravForce(Vector3 pos)
+    {
+        Vector3 F = new Vector3(0, 0);
+        foreach (Transform p in planets)
+        {
+
+            float distX = (p.position.x - pos.x);
+            float distY = (p.position.y - pos.y);
+            distX *= whatParam;
+            distY *= whatParam;
+
+            float r = Mathf.Sqrt(distX * distX + distY * distY + realR0 * realR0 * whatParam * whatParam);
+            float a = realG / r / r / r;
+            F.x += a * distX;
+            F.y += a * distY;
+
+        }
+
+        return F;
+    }
     public Vector3 OrbitVelocity(float mass)
     {
         // v^2 /r = a_g

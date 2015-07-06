@@ -6,7 +6,7 @@ using DotNetMatrix;
 public class FuturePath : MonoBehaviour 
 {
     public GameObject player;
-
+    public bool real;
 	// Use this for initialization
 	void Start () 
     {
@@ -77,7 +77,11 @@ public class FuturePath : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        List<Vector3> somuch = player.GetComponent<PlayerController>().NextPoints();
+        List<Vector3> somuch;
+        if (real)
+            somuch = player.GetComponent<PlayerController>().RealNextPoints();
+        else
+            somuch = player.GetComponent<PlayerController>().NextPoints();
         LineRenderer lr = GetComponent<LineRenderer>();
         lr.SetVertexCount(somuch.Count);
         for (int i = 0; i < somuch.Count; ++i)

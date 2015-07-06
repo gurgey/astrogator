@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
    // public Boundary boundary;
     public GameObject gameOverCanvas;
     public GameObject gameWinCanvas;
+    public GameObject asteroidBelt;
     public RectTransform battery;
     public RectTransform scoreBox;
     public FuturePath fp;
@@ -246,7 +247,7 @@ public class PlayerController : MonoBehaviour
     public List<Vector3> NextPoints()
     {
         int minNum = 10;
-        int maxNum = 200;
+        int maxNum = 500;
         float minDist = 0.1f;
         List<Vector3> ret = new List<Vector3>();
 
@@ -263,29 +264,11 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < maxNum && !insidePlanet; ++i)
         {
             ret.Add(fakePosition);
-            
+
             fakeAcceleration = GetComponent<NewtonGravity>().GravForce(fakePosition) / mass;
             fakePosition += Time.fixedDeltaTime * (fakeVelocity + Time.fixedDeltaTime * fakeAcceleration / 2f);
             Vector3 newAcceleration = GetComponent<NewtonGravity>().GravForce(fakePosition) / mass;
             fakeVelocity += Time.fixedDeltaTime * (fakeAcceleration + newAcceleration) / 2f;
-
-            //if (fakePosition.x > maxX)
-            //{
-            //    maxX = fakePosition.x;
-            //}
-            //else if (fakePosition.x < minX)
-            //{
-            //    minX = fakePosition.x;
-            //}
-
-            //if (fakePosition.y > maxY)
-            //{
-            //    maxY = fakePosition.y;
-            //}
-            //else if (fakePosition.y < minY)
-            //{
-            //    minY = fakePosition.y;
-            //}
 
             if (i > minNum && (fakePosition - transform.position).sqrMagnitude < minDist)
             {
@@ -296,12 +279,56 @@ public class PlayerController : MonoBehaviour
                 if (planet.GetComponent<Collider>().bounds.Contains(fakePosition))
                     insidePlanet = true;
             }
+            if (!asteroidBelt.GetComponent<Collider>().bounds.Contains(fakePosition))
+                insidePlanet = true;
 
         }
 
         return ret;
     }
 
+    public List<Vector3> RealNextPoints()
+    {
+        int minNum = 10;
+        int maxNum = 500;
+        float minDist = 0.1f;
+        List<Vector3> ret = new List<Vector3>();
+
+        Vector3 fakeAcceleration = new Vector3(acceleration.x, acceleration.y);
+        Vector3 fakeVelocity = new Vector3(velocity.x, velocity.y);
+        Vector3 fakePosition = new Vector3(transform.position.x, transform.position.y);
+
+        maxX = 0f;
+        minX = 0f;
+        maxY = 0f;
+        minY = 0f;
+
+        bool insidePlanet = false;
+        for (int i = 0; i < maxNum && !insidePlanet; ++i)
+        {
+            ret.Add(fakePosition);
+
+            fakeAcceleration = GetComponent<NewtonGravity>().RealGravForce(fakePosition) / mass;
+            fakePosition += Time.fixedDeltaTime * (fakeVelocity + Time.fixedDeltaTime * fakeAcceleration / 2f);
+            Vector3 newAcceleration = GetComponent<NewtonGravity>().RealGravForce(fakePosition) / mass;
+            fakeVelocity += Time.fixedDeltaTime * (fakeAcceleration + newAcceleration) / 2f;
+
+            if (i > minNum && (fakePosition - transform.position).sqrMagnitude < minDist)
+            {
+                break;
+            }
+            foreach (Transform planet in GetComponent<NewtonGravity>().planets)
+            {
+                if (planet.GetComponent<Collider>().bounds.Contains(fakePosition))
+                    insidePlanet = true;
+            }
+            if (!asteroidBelt.GetComponent<Collider>().bounds.Contains(fakePosition))
+                insidePlanet = true;
+
+        }
+
+        return ret;
+    }
     //Vector3 planetPos = new Vector3(0, 3, 0);
     //Vector3 Gf()
     //{

@@ -80,9 +80,9 @@ public class CameraFollow : MonoBehaviour {
 
 
             Vector3 cent = bounds.center;
-            float xl = Mathf.MoveTowards(transform.position.x, cent.x + xDistance, Time.smoothDeltaTime * speed);
-            float yl = Mathf.MoveTowards(transform.position.y, cent.y + yDistance, Time.smoothDeltaTime * speed);
-            transform.position = new Vector3
+            float xl = Mathf.MoveTowards(mainCamera.transform.position.x, cent.x + xDistance, Time.smoothDeltaTime * speed);
+            float yl = Mathf.MoveTowards(mainCamera.transform.position.y, cent.y + yDistance, Time.smoothDeltaTime * speed);
+            mainCamera.transform.position = new Vector3
             (
                 xl,
                 yl,
