@@ -7,6 +7,7 @@ public class PlanetTouch : MonoBehaviour
     public RectTransform arrows;
     public Transform camera;
     public bool friendly = false;
+    public bool hasMoon = false;
     RectTransform myArrow;
 
     public Vector3 originalScale;
